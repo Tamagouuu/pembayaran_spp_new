@@ -1,0 +1,76 @@
+form.user .form-control-user {
+  padding: 1.3rem 1rem;
+  border-radius: 0.7rem;
+}
+
+label {
+  margin-bottom: 0.3rem;
+}
+
+.custom-select {
+  border-radius: 0.7rem;
+  height: 43.59px;
+  font-size: 0.8rem;
+}
+
+.dashboard-footer {
+  margin-top: 325px;
+}
+
+ul li {
+  list-style: none;
+}
+
+.identitas li {
+  font-size: 0.9rem;
+}
+
+.btn-bayar {
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+  position: absolute;
+  bottom: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.btn-bayar:hover ~ .btn-bayar-asli {
+  /* background-color: red !important; */
+  background-color: #3857b3;
+}
+
+.btn-bayar-disabled {
+  padding: 0;
+  background-color: #a7a7a7;
+  height: 30px;
+  color: white;
+  border: none;
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
+  transition: 0.1s;
+}
+
+.border-top-primary {
+  border-top: 0.25rem solid #4e73df !important;
+}
+
+.btn-bayar-asli {
+  padding: 0;
+  background-color: #4e73df;
+  height: 30px;
+  color: white;
+  border: none;
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
+  transition: 0.1s;
+}
+
+.btn-bayar-asli.batal-bayar {
+  background-color: orange;
+}
+
+.btn-bayar:hover ~ .btn-bayar-asli.batal-bayar {
+  /* background-color: red !important; */
+  background-color: #cf8700;
+}
