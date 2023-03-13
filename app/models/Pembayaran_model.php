@@ -39,4 +39,26 @@ class Pembayaran_model
             ->execute()
             ->rowCount();
     }
+
+    public function cekTahun($tahunAwal, $tahunNow)
+    {
+        // var_dump($tahunAwal);
+        // var_dump($tahunNow);
+        // die;
+        $data = $this->db->query("SELECT * FROM pembayaran WHERE tahun_ajaran >= '$tahunAwal' AND tahun_ajaran <= '$tahunNow' ORDER BY `pembayaran`.`tahun_ajaran` ASC")
+            ->resultSet();
+
+        $tahunAjaran = [];
+        foreach ($data as $d) {
+            array_push($tahunAjaran, $d['tahun_ajaran']);
+        }
+
+        return $tahunAjaran;
+        // die;
+    }
+
+    public function cekPembayaranId($tahun)
+    {
+        return $this->db->query("SELECT id FROM pembayaran WHERE tahun_ajaran = '$tahun'")->single();
+    }
 }

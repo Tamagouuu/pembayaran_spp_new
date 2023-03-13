@@ -5,6 +5,18 @@
 <?= Components::heading($data['title']) ?>
 
 
+<?php if (isset($data['tahunAjaran'])) : ?>
+    <?php foreach ($data['tahunAjaran'] as $t) : ?>
+        <?php $tlink = explode('/', $t);
+        $tlink = implode('-', $tlink) ?>
+        <?php if ($t != $data['siswa']['tahun_ajaran']) : ?>
+            <a href="<?= BASEURL . "/dashboard/bayar/" . $data['siswa']['id'] . "/{$tlink}" ?>"><?= $t ?></a>
+        <?php else : ?>
+            <a href="<?= BASEURL . "/dashboard/bayar/" . $data['siswa']['id'] ?>"><?= $t ?></a>
+        <?php endif ?>
+    <?php endforeach ?>
+<?php endif ?>
+
 <div class="card p-2 border-bottom-primary" style="min-width: 240px; max-width : 390px">
     <div class="row flex-column flex-sm-row align-items-sm-start align-items-center text-sm-left text-center ">
         <div class="col-sm-6 col-7">
@@ -31,7 +43,7 @@
             <div class="row">
                 <!-- Earnings (Monthly) Card Example -->
                 <input type="hidden" name="siswa_id" value="<?= $data['siswa']['id'] ?>">
-                <input type="hidden" name="pembayaran_id" value="<?= $data['siswa']['pembayaran_id'] ?>">
+                <input type="hidden" name="pembayaran_id" value="<?= $data['tahunAjaranSkrng'] ?>">
                 <?php foreach ($data['nama_bulan'] as $key => $val) : ?>
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-top-primary shadow h-100 pt-2 position-relative">

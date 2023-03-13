@@ -19,9 +19,15 @@ class Transaksi_model
         return $this->db->getData('v_transaksi', 'id', $id);
     }
 
-    public function getTransaksiBySiswa($id)
+    public function getTransaksiBySiswa($id, $pembid)
     {
-        return $this->db->query("SELECT * FROM v_transaksi WHERE siswa_id = $id")
+        return $this->db->query("SELECT * FROM v_transaksi WHERE siswa_id = $id AND pembayaran_id = $pembid")
+            ->resultSet();
+    }
+
+    public function getTransaksiByTahun($id, $tahun_ajaran)
+    {
+        return $this->db->query("SELECT * FROM v_transaksi WHERE siswa_id = $id AND tahun_ajaran = '$tahun_ajaran'")
             ->resultSet();
     }
 
@@ -29,7 +35,7 @@ class Transaksi_model
     {
         foreach ($data['bulan_dibayar'] as $val) {
             $this->db->query("INSERT INTO transaksi VALUES (NULL, now(), :bulan, :tahun, :siswa_id, :petugas_id, :pembayaran_id)")
-                ->binds(['bulan' => $val, 'tahun' => date('Y'), 'siswa_id' => $data['siswa_id'], 'petugas_id' => $_SESSION['id'], 'pembayaran_id' => $data['pembayaran_id']])
+                ->binds(['bulan' => $val, 'tahun' => date('Y'), 'siswa_id' => $data['siswa_id'], 'petugas_id' => 1, 'pembayaran_id' => $data['pembayaran_id']])
                 ->execute();
         }
 
@@ -41,11 +47,33 @@ class Transaksi_model
         return $this->db->deleteData('kelas', 'id', $data);
     }
 
-    public function update($data)
+    public function getTransaksiBy($kelas, $jurusan, $tahunAjaran)
     {
-        return $this->db->query("UPDATE kelas SET nama_kelas = :nama_kelas, kompetensi_keahlian = :kompetensi_keahlian WHERE id = :id")
-            ->binds(['nama_kelas' => $data['nama_kelas'], 'kompetensi_keahlian' => $data['kompetensi_keahlian'], 'id' => $data['id']])
-            ->execute()
-            ->rowCount();
+        if ($kelas == 'all' && $jurusan == 'all' && $tahunAjaran == 'all') {
+            return $this->getAllTransaksi();
+        }
+
+        $tahunAjaran = implode('/', explode('-', $tahunAjaran));
+
+        $query = "SELECT * FROM v_transaksi WHERE ";
+
+        $where = [];
+
+        if ($kelas != 'all') {
+            $where[] = "nama_kelas = '$kelas'";
+        }
+
+        if ($jurusan != 'all') {
+            $where[] = "kompetensi_keahlian = '$jurusan'";
+        }
+
+        if ($tahunAjaran != 'all') {
+            $where[] = "tahun_ajaran = '$tahunAjaran'";
+        }
+
+        $where = implode(' AND ', $where);
+        return $this->db->query($query .= $where)->resultSet();
+        // var_dump($data);
+        // die;
     }
 }

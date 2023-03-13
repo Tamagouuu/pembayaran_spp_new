@@ -36,12 +36,12 @@
                     <select name="nama_kelas" class="custom-select" required>
                         <option value="all" selected>Semua Tahun Ajaran</option>
                         <?php foreach ($data['pembayaran'] as $j) : ?>
-                            <option value="<?= $j['tahun_ajaran'] ?>"><?= $j['tahun_ajaran'] ?></option>
+                            <option value="<?= implode('-', explode('/', $j['tahun_ajaran'])) ?>"><?= $j['tahun_ajaran'] ?></option>
                         <?php endforeach ?>
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary btn-user btn-block">
+            <button class=" btn btn-primary btn-user btn-block">
                 Filter Data
             </button>
         </form>
@@ -54,55 +54,46 @@
         <h6 class="m-0 font-weight-bold text-primary">Data <?= $data['title'] ?></h6>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>NISN</th>
-                        <th>NIS</th>
-                        <th>Username</th>
-                        <th>Nama Siswa</th>
-                        <th>Alamat</th>
-                        <th>Telepon</th>
-                        <th>Tahun Ajaran</th>
-                        <th>Kompetensi Keahlian</th>
-                        <th>Nominal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>NISN</th>
-                        <th>NIS</th>
-                        <th>Username</th>
-                        <th>Nama Siswa</th>
-                        <th>Alamat</th>
-                        <th>Telepon</th>
-                        <th>Kompetensi Keahlian</th>
-                        <th>Tahun Ajaran</th>
-                        <th>Nominal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <tr>
-                        <td><?= $s['nisn'] ?></td>
-                        <td><?= $s['nis'] ?></td>
-                        <td><?= $s['username'] ?></td>
-                        <td><?= $s['nama'] ?></td>
-                        <td><?= $s['alamat'] ?></td>
-                        <td><?= $s['telepon'] ?></td>
-                        <td><?= $s['tahun_ajaran'] ?></td>
-                        <td><?= $s['kompetensi_keahlian'] ?></td>
-                        <td><?= $s['nominal'] ?></td>
-                        <td>
-                            <?= Components::deleteButton("/deletesiswa/{$s['pengguna_id']}") ?>
-                            <?= Components::editButton("/editsiswa/{$s['id']}") ?>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <?php foreach ($data['sorted'] as $k => $d) : ?>
+            <div class="card d-inline-block">
+                <div class="card-body">
+                    <?php $identitas = explode('|', $k) ?>
+                    <h3><?= $identitas[0] ?></h3>
+                    <ul class="pl-0">
+                        <li>Kelas : <?= $identitas[1] ?></li>
+                        <li>Kelas</li>
+                        <li>NISN</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nominal</th>
+                            <th>Tahun Ajaran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Nominal</th>
+                            <th>Tahun Ajaran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <?php foreach ($d as $val) : ?>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        <?php endforeach ?>
+                    </tbody>
+                </table>
+            <?php endforeach ?>
+            </div>
     </div>
 </div>
 
@@ -110,8 +101,9 @@
     const formFilter = document.querySelector('.filter-user');
 
     formFilter.addEventListener('submit', (e) => {
-        e.preventDefault()
-        window.location.replace(`http://localhost/pembayaran_spp_new/public/dashboard/generatelaporan/${e.target[0].value}/${e.target[1].value}/${e.target[2].value}`)
+        e.preventDefault();
+
+        window.location.href = `http://localhost:8080/pembayaran_spp_new/public/dashboard/generatelaporan/${e.target[0].value}/${e.target[1].value}/${e.target[2].value}`
     })
 </script>
 

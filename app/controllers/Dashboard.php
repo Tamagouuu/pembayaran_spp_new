@@ -249,18 +249,42 @@ class Dashboard extends Controller
         $this->view('/dashboard/entrypembayaran/index', $data);
     }
 
-    public function bayar($id = null)
+    public function bayar($id = null, $tahun = null)
     {
         $data['title'] = 'Bayar SPP';
         $data['siswa'] = $this->model('Siswa_model')->getSiswa($id);
-        $data['bulan_dibayar'] = $this->model('Transaksi_model')->getTransaksiBySiswa($id);
-        $data['bulan_sorted'] = [];
-        foreach ($data['bulan_dibayar'] as $b) {
-            $data['bulan_sorted'][$b['bulan_dibayar']] = ['nominal' => $b['nominal'], 'tahun_ajaran' => $b['tahun_ajaran']];
+        // $data['bulan_dibayar'] = $this->model('Transaksi_model')->getTransaksiBySiswa($id, $data['siswa']['pembayaran_id']);
+        // $data['bulan_sorted'] = [];
+        // foreach ($data['bulan_dibayar'] as $b) {
+        //     $data['bulan_sorted'][$b['bulan_dibayar']] = ['nominal' => $b['nominal'], 'tahun_ajaran' => $b['tahun_ajaran']];
+        // }
+
+        // cek apakah dia ada transaksi di tahun ajaran sebelumnya tidak
+        if ($data['siswa']['tahun_ajaran_masuk'] != $data['siswa']['tahun_ajaran']) {
+            $data['tahunAjaran'] = $this->model('Pembayaran_model')->cekTahun($data['siswa']['tahun_ajaran_masuk'], $data['siswa']['tahun_ajaran']);
+        }
+
+        if ($tahun != null) {
+            $tahun = explode('-', $tahun);
+            $tahun = implode('/', $tahun);
+            $data['bulan_dibayar'] = $this->model('Transaksi_model')->getTransaksiByTahun($id, $tahun);
+            $data['bulan_sorted'] = [];
+            foreach ($data['bulan_dibayar'] as $b) {
+                $data['bulan_sorted'][$b['bulan_dibayar']] = ['nominal' => $b['nominal'], 'tahun_ajaran' => $b['tahun_ajaran']];
+            }
+            $data['tahunAjaranSkrng'] = $this->model('Pembayaran_model')->cekPembayaranId($tahun)['id'];
+            $data['pembayaran'] = $this->model('Pembayaran_model')->getPembayaran($data['tahunAjaranSkrng']);
+        } else {
+            $data['bulan_dibayar'] = $this->model('Transaksi_model')->getTransaksiBySiswa($id, $data['siswa']['pembayaran_id']);
+            $data['bulan_sorted'] = [];
+            foreach ($data['bulan_dibayar'] as $b) {
+                $data['bulan_sorted'][$b['bulan_dibayar']] = ['nominal' => $b['nominal'], 'tahun_ajaran' => $b['tahun_ajaran']];
+            }
+            $data['tahunAjaranSkrng'] = $data['siswa']['pembayaran_id'];
+            $data['pembayaran'] = $this->model('Pembayaran_model')->getPembayaran($data['siswa']['pembayaran_id']);
         }
 
         $data['nama_bulan'] = NAMA_BULAN;
-        $data['pembayaran'] = $this->model('Pembayaran_model')->getPembayaran($data['siswa']['pembayaran_id']);
         $this->view('/dashboard/entrypembayaran/bayar', $data);
     }
 
@@ -298,19 +322,35 @@ class Dashboard extends Controller
         $this->view('/dashboard/historipembayaran/detail', $data);
     }
 
-    public function generateLaporan($kelas = null, $jurusan = null, $tahunAjaranSatu = null, $tahunAjaranDua = null)
+    public function generateLaporan($kelas = null, $jurusan = null, $tahunAjaran = null)
     {
         $data['title'] = 'Generate Laporan';
         $data['jurusan'] = $this->model('Kelas_model')->getKompetensiKeahlian();
         $data['pembayaran'] = $this->model('Pembayaran_model')->getAllPembayaran();
-        if ($kelas != null || $jurusan != null || $tahunAjaranSatu != null) {
-            if ($kelas == 'all' && $jurusan == 'all' && $tahunAjaranSatu == 'all') {
-                $sandi = $this->model("Transaksi_model")->getAllTransaksi();
-                $sorted = [];
-                foreach ($sandi as $d) {
-                    $sorted[$d['nama_siswa'] . '|' . $d['nisn'] . '|' . $d['nama_kelas'] . '|' . $d['kompetensi_keahlian']][] = $d['bulan_dibayar'];
-                }
+        // if ($kelas != null || $jurusan != null || $tahunAjaranSatu != null) {
+        //     if ($kelas == 'all' && $jurusan == 'all' && $tahunAjaranSatu == 'all') {
+        //         $sandi = $this->model("Transaksi_model")->getAllTransaksi();
+        //         $sorted = [];
+        //         foreach ($sandi as $d) {
+        //             $sorted[$d['nama_siswa'] . '|' . $d['nisn'] . '|' . $d['nama_kelas'] . '|' . $d['kompetensi_keahlian']][] = $d['bulan_dibayar'];
+        //         }
+        //     }
+        // }
+
+        if ($kelas != null || $jurusan != null || $tahunAjaran != null) {
+
+            $transaksiData = $this->model("Transaksi_model")->getTransaksiBy($kelas, $jurusan, $tahunAjaran);
+
+            $sorted = [];
+
+            foreach ($transaksiData as $d) {
+                $sorted[$d['nama'] . '|' . $d['nama_kelas'] . '|' . $d['kompetensi_keahlian'] . '|' . $d['nisn']][] = $d;
             }
+
+            // var_dump($sorted);
+
+            $data['sorted'] = $sorted;
+            // die;
         }
         $this->view('/dashboard/generatelaporan/index', $data);
     }

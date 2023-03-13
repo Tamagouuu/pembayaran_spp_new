@@ -4,7 +4,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'pembayaran_spp');
-define('BASEURL', 'http://localhost/pembayaran_spp_new/public');
+define('BASEURL', 'http://localhost:8080/pembayaran_spp_new/public');
 define('PARTIAL_PATH', '../app/views/partials');
 
 define("NAMA_BULAN", [
